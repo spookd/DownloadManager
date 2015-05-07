@@ -33,12 +33,117 @@ public protocol DownloadManagerDelegate: class {
     func downloadManager(downloadManager: DownloadManager, downloadDidProgress url: NSURL, totalSize: UInt64, downloadedSize: UInt64, percentage: Double, averageDownloadSpeedInBytes: UInt64, timeRemaining: NSTimeInterval)
 }
 
+func ==(left: DownloadManager.Download, right: DownloadManager.Download) -> Bool {
+    return left.url == right.url
+}
+
 public class DownloadManager: NSObject, NSURLConnectionDataDelegate {
     
     internal let queue = dispatch_queue_create("io.persson.DownloadManager", DISPATCH_QUEUE_CONCURRENT)
     
     internal var delegates: [DownloadManagerDelegate] = []
-    internal var downloads: [Download] = []
+    internal var downloads: [DownloadManager.Download] = []
+    
+    
+    
+    class Download: Equatable {
+        
+        let url:      NSURL
+        let filePath: String
+        
+        let stream:     NSOutputStream
+        let connection: NSURLConnection
+        
+        var totalSize: UInt64
+        var downloadedSize: UInt64 = 0
+        
+        // Variables used for calculating average download speed
+        // The lower the interval (downloadSampleInterval) the higher the accuracy (fluctuations)
+        
+        internal let sampleInterval       = 0.25
+        internal let sampledSecondsNeeded = 5.0
+        
+        internal lazy var sampledBytesTotal: Int = {
+            return Int(ceil(self.sampledSecondsNeeded / self.sampleInterval))
+            }()
+        
+        internal var samples: [UInt64] = []
+        internal var sampleTimer: Timer?
+        internal var lastAverageCalculated = NSDate()
+        
+        internal var bytesWritten = 0
+        internal let queue = dispatch_queue_create("dk.dr.radioapp.DownloadManager.SampleQueue", DISPATCH_QUEUE_CONCURRENT)
+        
+        var averageDownloadSpeed: UInt64 = UInt64.max
+        
+        init(url: NSURL, filePath: String, totalSize: UInt64, connection: NSURLConnection) {
+            dispatch_set_target_queue(self.queue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0))
+            
+            self.url       = url
+            self.filePath  = filePath
+            self.totalSize = totalSize
+            
+            if let dict: NSDictionary = NSFileManager.defaultManager().attributesOfItemAtPath(self.filePath, error: nil) {
+                self.downloadedSize = dict.fileSize()
+            }
+            
+            self.stream     = NSOutputStream(toFileAtPath: self.filePath, append: self.downloadedSize > 0)!
+            self.connection = connection
+            
+            self.stream.scheduleInRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+            self.stream.open()
+            
+            self.sampleTimer?.invalidate()
+            self.sampleTimer = Timer(interval: self.sampleInterval, repeats: true, pauseInBackground: true, block: { [weak self] () -> () in
+                if let strongSelf = self {
+                    dispatch_sync(strongSelf.queue, { () -> Void in
+                        strongSelf.samples.append(UInt64(strongSelf.bytesWritten))
+                        
+                        let diff = strongSelf.samples.count - strongSelf.sampledBytesTotal
+                        
+                        if diff > 0 {
+                            for i in (0...diff - 1) {
+                                strongSelf.samples.removeAtIndex(0)
+                            }
+                        }
+                        
+                        strongSelf.bytesWritten = 0
+                        
+                        let now = NSDate()
+                        
+                        if now.timeIntervalSinceDate(strongSelf.lastAverageCalculated) >= 5 && strongSelf.samples.count >= strongSelf.sampledBytesTotal {
+                            var totalBytes: UInt64 = 0
+                            
+                            for sample in strongSelf.samples {
+                                totalBytes += sample
+                            }
+                            
+                            strongSelf.averageDownloadSpeed  = UInt64(round(Double(totalBytes) / strongSelf.sampledSecondsNeeded))
+                            strongSelf.lastAverageCalculated = now
+                        }
+                    })
+                }
+                })
+        }
+        
+        func write(data: NSData) {
+            let written = self.stream.write(UnsafePointer<UInt8>(data.bytes), maxLength: data.length)
+            
+            if written > 0 {
+                dispatch_async(self.queue, { () -> Void in
+                    self.bytesWritten += written
+                })
+            }
+        }
+        
+        func close() {
+            self.sampleTimer?.invalidate()
+            self.sampleTimer = nil
+            
+            self.stream.close()
+        }
+        
+    }
     
 }
 

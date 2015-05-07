@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		9AF9CD1D1AF8E7CE008C3814 /* DownloadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9AF9CD1C1AF8E7CE008C3814 /* DownloadManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9AF9CD351AF8E7FB008C3814 /* Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF9CD341AF8E7FB008C3814 /* Download.swift */; };
 		9AF9CD371AF8E833008C3814 /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF9CD361AF8E833008C3814 /* Timer.swift */; };
 		9AF9CD391AF8E908008C3814 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF9CD381AF8E908008C3814 /* DownloadManager.swift */; };
 		9AF9CD3B1AF8E9EE008C3814 /* Array+DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF9CD3A1AF8E9EE008C3814 /* Array+DownloadManager.swift */; };
@@ -18,7 +17,6 @@
 		9AF9CD171AF8E7CE008C3814 /* DownloadManager.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DownloadManager.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AF9CD1B1AF8E7CE008C3814 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9AF9CD1C1AF8E7CE008C3814 /* DownloadManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DownloadManager.h; sourceTree = "<group>"; };
-		9AF9CD341AF8E7FB008C3814 /* Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Download.swift; path = Source/Download.swift; sourceTree = "<group>"; };
 		9AF9CD361AF8E833008C3814 /* Timer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Timer.swift; path = Source/Timer.swift; sourceTree = "<group>"; };
 		9AF9CD381AF8E908008C3814 /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DownloadManager.swift; path = Source/DownloadManager.swift; sourceTree = "<group>"; };
 		9AF9CD3A1AF8E9EE008C3814 /* Array+DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Array+DownloadManager.swift"; path = "Source/Array+DownloadManager.swift"; sourceTree = "<group>"; };
@@ -72,7 +70,6 @@
 		9AF9CD331AF8E7EC008C3814 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				9AF9CD341AF8E7FB008C3814 /* Download.swift */,
 				9AF9CD361AF8E833008C3814 /* Timer.swift */,
 				9AF9CD381AF8E908008C3814 /* DownloadManager.swift */,
 				9AF9CD3A1AF8E9EE008C3814 /* Array+DownloadManager.swift */,
@@ -158,7 +155,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9AF9CD351AF8E7FB008C3814 /* Download.swift in Sources */,
 				9AF9CD391AF8E908008C3814 /* DownloadManager.swift in Sources */,
 				9AF9CD371AF8E833008C3814 /* Timer.swift in Sources */,
 				9AF9CD3B1AF8E9EE008C3814 /* Array+DownloadManager.swift in Sources */,
@@ -309,6 +305,7 @@
 				9AF9CD2F1AF8E7CE008C3814 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
