@@ -233,6 +233,10 @@ extension DownloadManager {
     }
     
     public func download(url: NSURL, filePath: String) -> Bool {
+        if self.isDownloading(url) {
+            return true
+        }
+    
         var request = NSMutableURLRequest(URL: url)
         
         if let dict: NSDictionary = NSFileManager.defaultManager().attributesOfItemAtPath(filePath, error: nil) {
